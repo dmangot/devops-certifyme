@@ -32,7 +32,6 @@ def draw_pdf(sparklydevop):
     certimage = './devops.cert.png'
 
     # TODO make this a function of image size
-    # TODO make sure we can read the file
     width = 1116
     height = 1553
 
@@ -47,8 +46,12 @@ def draw_pdf(sparklydevop):
 
     # Print Name
     name_offset = c.stringWidth(sparklydevop)
-    c.drawImage(certimage, 1, 1)
-    c.drawString((width-name_offset)/2, height*3/4, sparklydevop)
+    try:
+        c.drawImage(certimage, 1, 1)
+    except IOError:
+        print "I/O error trying to open %s" % certimage
+    else:
+        c.drawString((width-name_offset)/2, height*3/4, sparklydevop)
 
     # Print Certificate Number
     cert_number = "Certificate No. " + str(get_brooklyn_integer())
@@ -58,7 +61,10 @@ def draw_pdf(sparklydevop):
     c.showPage()
 
     # TODO check for write permissions/failure
-    c.save()
+    try:
+        c.save()
+    except IOError:
+        print "I/O error trying to save %s" % OUTPUTFILE
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
